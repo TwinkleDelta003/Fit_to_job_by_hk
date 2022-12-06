@@ -24,6 +24,8 @@ String district = "assets/images/district.png";
 String selecticon = "assets/images/research.png";
 String selectjob = "assets/images/select_job.png";
 String stateGM = "assets/images/state GM.png";
+String subjob = "assets/images/subjobprofile.png";
+String noInternet = "assets/images/nointenet.json";
 //hompage
 String username = "assets/images/username.png";
 String jobprofile = "assets/images/jobprofile.png";

@@ -24,11 +24,25 @@ class UploadScreen extends StatefulWidget {
 
 class _UploadScreenState extends State<UploadScreen> {
   String videoPath;
+  String firstName;
+  String lastName;
+  String registrationId;
+  String designation;
   getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       videoPath = prefs.getString('videoFile');
+      lastName = prefs.getString('lastName');
+      firstName = prefs.getString('firstName');
+      registrationId = prefs.getString('registrationId');
+      designation = prefs.getString('designation');
     });
+  }
+
+  @override
+  void initState() {
+    getUserId();
+    super.initState();
   }
 
   File _image;
@@ -47,23 +61,22 @@ class _UploadScreenState extends State<UploadScreen> {
 
   Future uploadImage() async {
     var url =
-        "https://icrm.promptsoftech.com/RidhhiAPI/Service/API_InsertComplaint.aspx";
+        "http://110.227.253.77:90/DeltaFitToJob/API/RegistrationVerifications.aspx";
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    // request.fields['complainId'] = serviceCallId.toString();
-    // request.fields['lgrId'] = lgrId.toString();
-    // request.fields['DivTextListId'] = divTextList.toUpperCase();
+    request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
 
-    var pic = await http.MultipartFile.fromPath("fuUploadedPhoto", _image.path);
-    // var audio = await http.MultipartFile.fromPath("fuUploadedAudio", audioPath);
+    var pic = await http.MultipartFile.fromPath("PhotoPath", _image.path);
 
     request.files.add(pic);
-    // request.files.add(audio);
     var response = await request.send();
 
     var responsed = await http.Response.fromStream(response);
     final responseJson = json.decode(responsed.body);
 
-    debugPrint(responseJson);
+    return responseJson;
+
+    // debugPrint(responseJson);
+    // debugPrint(registrationId);
   }
 
   Future<void> _playVideo(XFile file) async {
@@ -103,14 +116,12 @@ class _UploadScreenState extends State<UploadScreen> {
 
   Future uploadVideo() async {
     var url =
-        "https://icrm.promptsoftech.com/RidhhiAPI/Service/API_InsertComplaint.aspx";
+        "http://110.227.253.77:90/DeltaFitToJob/API/API_SelfIntroVideo.aspx";
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    // request.fields['complainId'] = serviceCallId.toString();
-    // request.fields['lgrId'] = lgrId.toString();
-    // request.fields['DivTextListId'] = divTextList.toString().toUpperCase();
+    request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
 
     var video = await http.MultipartFile.fromPath(
-        "fuUploadedVideo", videoPath.toString());
+        "SelfIntroVideoPath", videoPath.toString());
 
     request.files.add(video);
     var response = await request.send();
@@ -129,13 +140,16 @@ class _UploadScreenState extends State<UploadScreen> {
       );
       debugPrint(responseJson);
     }
+    return responseJson;
   }
 
   Future uploadFile() async {
-    var url = "";
+    var url =
+        "http://110.227.253.77:90/DeltaFitToJob/API/API_UploadResume.aspx";
     var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
     var uploadfile = await http.MultipartFile.fromPath(
-        "fuUploadedVideo", uploadFile.toString());
+        "ResumeUpload", uploadFile.toString());
     request.files.add(uploadfile);
     var response = await request.send();
     var responsed = await http.Response.fromStream(response);
@@ -153,35 +167,50 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-// Pick File and Open
-  void _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-    if (result == null) return;
-    final file = result.files.first;
-    Get.dialog(AlertDialog(
-      title: Text("Your Image".tr),
-      content: Container(child: _openFile(file)),
-      actions: [
-        TextButton(
-            onPressed: () => Get.back(),
-            child: Text(
-              "Cancel".tr,
-              style: const TextStyle(fontSize: 16),
-            )),
-        SizedBox(
-          // ignore: use_build_context_synchronously
-          width: MediaQuery.of(context).size.width / 2,
-          child: Helper().customMaterialButton(
-              bName: "Submit",
-              fSize: 20,
-              context: context,
-              press: () {
-                Get.back();
-              }),
-        )
-      ],
-    ));
+  Widget _previewResume() {
+    if (_controller == null) {
+      return const Text(
+        'You have not yet picked a video',
+        textAlign: TextAlign.center,
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      // child: _openFile(file),
+    );
   }
+
+// Pick File and Open
+  // Future  _pickFile() async {
+  //   final result = await FilePicker.platform.pickFiles(allowMultiple: true);
+  //   if (result == null) return;
+  //   final file = result.files.first;
+
+  //   _openFile(file);
+  // }
+  // Get.dialog(AlertDialog(
+  //   title: Text("Your Image".tr),
+  //   content: _openFile(file),
+  //   actions: [
+  //     TextButton(
+  //         onPressed: () => Get.back(),
+  //         child: Text(
+  //           "Cancel".tr,
+  //           style: const TextStyle(fontSize: 16),
+  //         )),
+  //     SizedBox(
+  //       // ignore: use_build_context_synchronously
+  //       width: MediaQuery.of(context).size.width / 2,
+  //       child: Helper().customMaterialButton(
+  //           bName: "Submit",
+  //           fSize: 20,
+  //           context: context,
+  //           press: () {
+  //             Get.back();
+  //           }),
+  //     )
+  //   ],
+  // )
 
 // For view as Preview file
   _openFile(PlatformFile file) {
@@ -213,16 +242,6 @@ class _UploadScreenState extends State<UploadScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: Icon(
-              Icons.logout,
-              color: textColor,
-              size: 30,
-            ),
-          )
-        ],
         leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios,
@@ -263,9 +282,12 @@ class _UploadScreenState extends State<UploadScreen> {
                             const SizedBox(
                               width: 10,
                             ),
-                            const Text(
-                              "User Name",
-                              style: TextStyle(color: textColor, fontSize: 18),
+                            Text(
+                              "$firstName $lastName",
+                              style: const TextStyle(
+                                  color: textColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
                             )
                           ],
                         ),
@@ -278,9 +300,12 @@ class _UploadScreenState extends State<UploadScreen> {
                             const SizedBox(
                               width: 10,
                             ),
-                            const Text(
-                              "CNC Operator && Security Canteen",
-                              style: TextStyle(color: textColor, fontSize: 18),
+                            Text(
+                              designation.toString(),
+                              style: const TextStyle(
+                                  color: textColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700),
                             )
                           ],
                         ),
@@ -418,7 +443,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                                       2,
                                                   child: Helper()
                                                       .customMaterialButton(
-                                                          bName: "Submit",
+                                                          bName: "Submit".tr,
                                                           fSize: 20,
                                                           context: context,
                                                           press: () {
@@ -514,7 +539,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                                               Get.back();
                                                               videoPath =
                                                                   file.path;
-                                                              // uploadVideo();
+                                                              uploadVideo();
 
                                                               debugPrint(
                                                                   "String Path $videoPath");
@@ -577,14 +602,78 @@ class _UploadScreenState extends State<UploadScreen> {
                                 padding: const EdgeInsets.all(14.0),
                                 child: InkWell(
                                   onTap: () async {
-                                    _pickFile();
-                                    // var picked =
-                                    //     await FilePicker.platform.pickFiles();
+                                    _pickFile() async {
+                                      final result = await FilePicker.platform
+                                          .pickFiles(allowMultiple: true);
+                                      if (result == null) return;
+                                      final file = result.files.first;
 
-                                    // if (picked != null) {
-                                    //   debugPrint(picked.files.first.name);
-                                    // }
+                                      _openFile(file).whenComplete(() => {
+                                        
+                                      });
+                                    }
+                                    // final XFile file =
+                                    //     await _picker.pickVideo(
+                                    //   source: ImageSource.camera,
+                                    // );
+                                    // setState(() {
+                                    //   isCaptured = true;
+                                    // });
+                                    // _pickFile().whenComplete(() => {
+
+                                    // Get.dialog(AlertDialog(
+                                    //   actions: [
+                                    //     TextButton(
+                                    //         onPressed: () {
+                                    //           Get.back();
+                                    //           _disposeVideoController();
+                                    //         },
+                                    //         child: Text(
+                                    //           "Cancel".tr,
+                                    //           style: const TextStyle(
+                                    //               fontSize: 16),
+                                    //         )),
+                                    //     SizedBox(
+                                    //       width:
+                                    //           MediaQuery.of(context)
+                                    //                   .size
+                                    //                   .width /
+                                    //               2,
+                                    //       child: Helper()
+                                    //           .customMaterialButton(
+                                    //               bName: "Confirm".tr,
+                                    //               fSize: 20,
+                                    //               context: context,
+                                    //               press: () {
+                                    //                 Get.back();
+
+                                    //                 uploadFile();
+
+                                    //                 debugPrint(
+                                    //                     "String Path $uploadFile");
+                                    //               }),
+                                    //     )
+                                    //   ],
+                                    //   content: SizedBox(
+                                    //     width: double.infinity,
+                                    //     height: double.infinity,
+                                    //     child:
+                                    //     // _previewVideo(),
+                                    //   ),
+                                    //   title: Text(
+                                    //       "Your uploded  Resume".tr),
+                                    // ))
+                                    // });
                                   },
+                                  // onTap: () async {
+                                  //   _pickFile();
+                                  //   // var picked =
+                                  //   //     await FilePicker.platform.pickFiles();
+
+                                  //   // if (picked != null) {
+                                  //   //   debugPrint(picked.files.first.name);
+                                  //   // }
+                                  // },
                                   child: Container(
                                     height:
                                         MediaQuery.of(context).size.height / 8,
@@ -644,10 +733,10 @@ class _UploadScreenState extends State<UploadScreen> {
                           fSize: 24,
                           fweight: FontWeight.w500,
                           press: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const DoneScreen()));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) => const DoneScreen()));
                           },
                         ),
                         const SizedBox(
@@ -690,9 +779,8 @@ class VideoPlayerApp extends StatelessWidget {
 }
 
 class VideoPlayerScreen extends StatefulWidget {
-
   const VideoPlayerScreen({Key key}) : super(key: key);
- 
+
   @override
 // ignore: library_private_types_in_public_api
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
@@ -811,4 +899,3 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     }
   }
 }
-

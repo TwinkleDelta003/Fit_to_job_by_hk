@@ -1,3 +1,5 @@
+import 'package:fit_to_job/LocalStorage/SaveCredential.dart';
+
 import '../../Screens/Authentication/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -41,7 +43,9 @@ Future registerAPI(
         chooseColor: Colors.green));
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+
     debugPrint("Register Succesfully");
+    debugPrint(data['result']);
   } else {
       ScaffoldMessenger.of(context).showSnackBar(customSnackbar(
         label: "Login Now",

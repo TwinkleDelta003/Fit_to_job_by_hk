@@ -23,6 +23,26 @@ class Helper {
     );
   }
 
+  Widget customText1(
+      {String text,
+      double fontSize,
+      TextOverflow overflow,
+      Color color,
+      TextAlign align,
+      FontWeight fWeight}) {
+    return Text(
+      text,
+      softWrap: true,
+      maxLines: 3,
+      textAlign: align,
+      style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fWeight,
+          overflow: overflow),
+    );
+  }
+  
   Widget customMaterialButton(
       {String bName,
       double fSize,
@@ -201,7 +221,33 @@ class Helper {
       ),
     );
   }
-
+  
+  // REsult Button
+  Widget customMaterialButton5(
+      {String bName,
+      double fSize,
+      FontWeight fweight,
+      fColor,
+      context,
+      VoidCallback press}) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 2.2,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Color.fromARGB(255, 92, 173, 150)),
+      child: MaterialButton(
+        elevation: 4,
+        onPressed: press,
+        child: Text(
+          bName,
+          style: TextStyle(
+              color: const Color(0xffffffff),
+              fontSize: fSize,
+              fontWeight: fweight),
+        ),
+      ),
+    );
+  }
   Widget customPinPut(
       {TextEditingController controller, Function(String) onCompleted}) {
     return Pinput(
@@ -246,3 +292,5 @@ Widget customSnackbar(
     duration: time,
   );
 }
+
+

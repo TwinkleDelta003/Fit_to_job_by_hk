@@ -1,7 +1,11 @@
-import 'package:fit_to_job/Screens/CommonScreen/home_screen.dart';
+
+import 'package:fit_to_job/Screens/CommonScreen/uploaddoc_screen.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
 import 'package:fit_to_job/Screens/Constant/imagePath.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../API/Controller/jobprofile_controller.dart';
+import '../../API/Model/jobprofile_model.dart';
 import '../Constant/responsive.dart';
 import '../Widgets/hepler.dart';
 
@@ -17,6 +21,17 @@ class _JobprofileState extends State<Jobprofile> {
     "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg",
     "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"
   ];
+  final List<String> _selectedValues = [];
+
+  String complain;
+
+  bool isDismissible = false;
+
+
+  var data = Get.arguments;
+
+ 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,386 +86,77 @@ class _JobprofileState extends State<Jobprofile> {
               color: const Color(0xff018F89),
               child: Column(
                 children: [
-                  Row(children: const [
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Color(0xffF5C400),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "Marketing Staff",
-                      style: TextStyle(
-                          fontSize: 24,
-                          color: Color(0xffF5C400),
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ]),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 2.2,
-                                height: MediaQuery.of(context).size.height / 6,
-                                child: InkWell(
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    color: Colors.white,
-                                    child: Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            const SizedBox(height: 12),
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 3.0, right: 90),
-                                              child: CircleAvatar(
-                                                  backgroundColor:
-                                                      Color(0xffD9D9D9),
-                                                  radius: 7),
-                                            ),
-                                            Row(
-                                              children: [
-                                                const SizedBox(
-                                                  width: 10,
-                                                ),
-                                                const SizedBox(
-                                                  width: 25,
-                                                ),
-                                                customAssetPath(
-                                                    imagePath: stateGM)
-                                              ],
-                                            ),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            const Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 20.0),
-                                              child: Text("State GM Excutive"),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 2.2,
-                                height: MediaQuery.of(context).size.height / 6,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  color: Colors.white,
-                                  child: Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 12),
-                                          const Padding(
-                                            padding: EdgeInsets.only(
-                                                top: 3.0, right: 90),
-                                            child: CircleAvatar(
-                                                backgroundColor:
-                                                    Color(0xffD9D9D9),
-                                                radius: 7),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              const SizedBox(
-                                                width: 25,
-                                              ),
-                                              customAssetPath(
-                                                  imagePath: stateGM)
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          const Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 20.0),
-                                            child: Text("State GM Excutive"),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(children: const [
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Color(0xffF5C400),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "Utility Staff",
-                      style: TextStyle(
-                          fontSize: 24,
-                          color: Color(0xffF5C400),
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ]),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 2.2,
-                                height: MediaQuery.of(context).size.height / 6,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  color: Colors.white,
-                                  child: Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 12),
-                                          const Padding(
-                                            padding: EdgeInsets.only(
-                                                top: 3.0, right: 90),
-                                            child: CircleAvatar(
-                                                backgroundColor:
-                                                    Color(0xffD9D9D9),
-                                                radius: 7),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              const SizedBox(
-                                                width: 25,
-                                              ),
-                                              customAssetPath(
-                                                  imagePath: stateGM)
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          const Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 20.0),
-                                            child: Text("State GM Excutive"),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 2.2,
-                                height: MediaQuery.of(context).size.height / 6,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  color: Colors.white,
-                                  child: Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 12),
-                                          const Padding(
-                                            padding: EdgeInsets.only(
-                                                top: 3.0, right: 90),
-                                            child: CircleAvatar(
-                                                backgroundColor:
-                                                    Color(0xffD9D9D9),
-                                                radius: 7),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              const SizedBox(
-                                                width: 25,
-                                              ),
-                                              customAssetPath(
-                                                  imagePath: stateGM)
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          const Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 20.0),
-                                            child: Text("State GM Excutive"),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(children: const [
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CircleAvatar(
-                      radius: 5,
-                      backgroundColor: Color(0xffF5C400),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      "Utility Staff",
-                      style: TextStyle(
-                          fontSize: 24,
-                          color: Color(0xffF5C400),
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ]),
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width / 2.2,
-                                height: MediaQuery.of(context).size.height / 6,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  color: Colors.white,
-                                  child: Row(
-                                    children: [
-                                      Column(
-                                        children: [
-                                          const SizedBox(height: 12),
-                                          const Padding(
-                                            padding: EdgeInsets.only(
-                                                top: 3.0, right: 90),
-                                            child: CircleAvatar(
-                                                backgroundColor:
-                                                    Color(0xffD9D9D9),
-                                                radius: 7),
-                                          ),
-                                          Row(
-                                            children: [
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              const SizedBox(
-                                                width: 25,
-                                              ),
-                                              customAssetPath(
-                                                  imagePath: stateGM)
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          const Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 20.0),
-                                            child: Text("State GM Excutive"),
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ],
+                  FutureBuilder<JobprofileModel>(
+                    future: getjobprofile(),
+                    builder: (context, snapshot) {
+                      // if (_networkManager.connectionType == 0) {
+                      //   return Center(
+                      //     child: Lottie.asset(noInternet),
+                      //   ); su joiae jap kela
+                      // } else 
+                      if (snapshot.data == null) {
+                        return Center(
+                            child: Center(
+                                child: snapshot.connectionState !=
+                                        ConnectionState.done
+                                    ? const CircularProgressIndicator()
+                                    : Helper().customText(
+                                        text: "No Data Available".tr,
+                                        fontSize: 22,
+                                        align: TextAlign.center)));
+                      } else {
+                        return GridView.builder(
+                            padding: const EdgeInsets.all(10),
+                            physics: const BouncingScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              childAspectRatio: 16 / 11,
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: snapshot.data.result.length,
+                            itemBuilder: (context, index) {
+                              var list = snapshot.data.result[index];
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (_selectedValues
+                                        .contains(list.staffCategory)) {
+                                      _selectedValues
+                                          .remove(list.staffCategory);
+                                    } else {
+                                      _selectedValues.add(list.staffCategory);
+                                    }
+                                    debugPrint(_selectedValues.toString());
+                                  });
+                                },
+                                child: jobUI(
+                                    model: JobprofileModel(result: [list])),
+                              );
+                            });
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   Helper().customMaterialButton1(
-                    bName: "Continue",
+                    bName: "continue",
                     context: context,
                     fSize: 26,
                     fweight: FontWeight.bold,
                     press: () {
-                      // errorLens();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const HomeScreen()));
+                      errorLens();
+                    
+                     
                     },
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 30,
                   )
-                  // GridView.builder(
-                  //     padding: const EdgeInsets.all(10),
-                  //     physics: const BouncingScrollPhysics(),
-                  //     gridDelegate:
-                  //         const SliverGridDelegateWithFixedCrossAxisCount(
-                  //       childAspectRatio: 20 / 11,
-                  //       crossAxisCount: 2,
-                  //       crossAxisSpacing: 10,
-                  //       mainAxisSpacing: 10,
-                  //     ),
-                  //     scrollDirection: Axis.vertical,
-                  //     shrinkWrap: true,
-                  //     itemCount: 2,
-                  //     itemBuilder: (context, index) {
-                  //       return Container(
-                  //         color: Colors.white,
-                  //         child: Column(
-                  //           children:  [
-                  //             const Text("data"),
-                  //             customAssetPath(imagePath: selecticon,size: 50)
-                  //           ],
-                  //         ),
-                  //       );
-                  //       // return Image.network(images[index]);
-                  //     })
                 ],
               ),
             ),
@@ -458,5 +164,61 @@ class _JobprofileState extends State<Jobprofile> {
         ),
       ),
     );
+  }
+
+  Widget jobUI({JobprofileModel model}) {
+    return Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: _selectedValues.contains(model.result[0].staffCategory)
+                ? const Color.fromARGB(255, 156, 255, 250)
+                : Colors.white,
+            border: Border.all(
+              color: textColor,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(10)),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Icon(
+                _selectedValues.contains(model.result[0].staffCategory)
+                    ? Icons.check_box
+                    : Icons.check_box_outline_blank,
+                color: _selectedValues.contains(model.result[0].staffCategory)
+                    ? textColor
+                    : Colors.grey,
+              ),
+            ),
+            Align(
+              alignment: Alignment.center,
+              child: Helper().customText1(
+                  text: model.result[0].staffCategory,
+                  fontSize: 16,
+                  align: TextAlign.center,
+                  fWeight: FontWeight.bold,
+                  overflow: TextOverflow.fade),
+            ),
+          ],
+        ));
+  }
+
+  errorLens() {
+    if (_selectedValues.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(customSnackbar(
+          label: "",
+          time: const Duration(seconds: 5),
+          press: () {},
+          msg: "Select Job Profile",
+          chooseColor: Colors.red));
+    } else {
+      getsubprofile(
+          StaffCategory: _selectedValues
+              .toString()
+              .replaceAll("[", "")
+              .replaceAll("]", ""),
+          context: context);
+    }
   }
 }

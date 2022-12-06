@@ -1,8 +1,12 @@
-import 'package:fit_to_job/Screens/CommonScreen/uploaddoc_screen.dart';
+import 'package:fit_to_job/API/Controller/question_controller.dart';
+import 'package:fit_to_job/API/Model/result_model.dart';
+import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../API/Model/view_summary.dart';
+import '../Constant/responsive.dart';
 import '../Widgets/hepler.dart';
-import 'test_screen.dart';
 
 class ResultScreen extends StatefulWidget {
   const ResultScreen({Key key}) : super(key: key);
@@ -12,6 +16,36 @@ class ResultScreen extends StatefulWidget {
 }
 
 class ResultScreenState extends State<ResultScreen> {
+  String registrationId;
+  String firstName;
+  String designation;
+  getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      registrationId = prefs.getString('registrationId');
+      firstName = prefs.getString('firstName');
+      designation = prefs.getString('designation');
+    });
+  }
+
+  String testId = "";
+  String examScheduleId = "";
+  String subId = "";
+  String subName = "";
+  String totalExamTime = "";
+  String insertedByUserId = "";
+  @override
+  void initState() {
+    getUserId();
+    testId = data[0];
+    examScheduleId = data[1];
+    subId = data[2];
+    subName = data[3];
+    totalExamTime = data[4];
+    super.initState();
+  }
+
+  var data = Get.arguments;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,11 +59,11 @@ class ResultScreenState extends State<ResultScreen> {
               color: Color(0xff018F89),
             ),
             onPressed: () => Get.back()),
-        title: const Padding(
-          padding: EdgeInsets.only(right: 120.0),
+        title: Padding(
+          padding: const EdgeInsets.only(right: 120.0),
           child: Text(
-            "Your Name ",
-            style: TextStyle(
+            firstName.toString(),
+            style: const TextStyle(
                 color: Color(0xff1AA19A),
                 fontSize: 24,
                 fontWeight: FontWeight.bold),
@@ -37,159 +71,386 @@ class ResultScreenState extends State<ResultScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-                height: MediaQuery.of(context).size.height / 5,
-                width: MediaQuery.of(context).size.height / 5,
-                decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(100),
-                    gradient: const LinearGradient(
-                        colors: [
-                          Color(0xff87F3E2),
-                          Color.fromARGB(255, 1, 121, 115),
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter)),
-                child: const Center(
-                  child: Text(
-                    "PASS",
-                    style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
+          child: Column(
+        children: [
+          FutureBuilder(
+              future: resultAPI(
+                  ExamScheduleId: data[1],
+                  RegistrationId: registrationId.toString(),
+                  Subject: data[3],
+                  IsJeeNeet: "",
+                  TestId: data[0]
+                  // ExamScheduleId: "b93285c2-1186-4ded-a671-979227d40180",
+                  // RegistrationId: "b1660f38-e7fc-405a-bd8b-e16c25479db7",
+                  // Subject: "Executive",
+                  // IsJeeNeet: "",
+                  // TestId: "83613fc4-a38f-4278-bb95-239539201282"
                   ),
-                  //  Text(
-                  //   "FAIL",
-                  //   style: TextStyle(
-                  //       fontSize: 32,
-                  //       fontWeight: FontWeight.bold,
-                  //       color: Colors.white),
-                  // ),
-                )),
-            const SizedBox(
-              height: 40,
-            ),
-            const Text(
-              "Congratulation!!!",
+              builder: (context, snapshot) {
+                if (snapshot.data == null) {
+                  return Center(
+                      child: Center(
+                          child:
+                              snapshot.connectionState != ConnectionState.done
+                                  ? const CircularProgressIndicator()
+                                  : Helper().customText(
+                                      text: "No Data Found", fontSize: 20)));
+                } else {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height / 1,
+                    width: MediaQuery.of(context).size.width,
+                    child: ListView.builder(
+                        itemCount: snapshot.data.result.length,
+                        itemBuilder: (context, index) {
+                          var list = snapshot.data.result[index];
+                          return _resultUI(model: ResultModel1(result: [list]));
+                        }),
+                  );
+                }
+              }),
+        ],
+      )),
+    );
+  }
+
+  _resultUI({ResultModel1 model}) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Total Question Summary",
               style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xff127D00)),
+                  color: Color.fromARGB(255, 48, 47, 47),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18),
             ),
-            //  const Text(
-            //   "OOPS!!!",
-            //   style: TextStyle(
-            //       fontSize: 28,
-            //       fontWeight: FontWeight.bold,
-            //       color: Color(0xff1A3770)),
-            // ),
-            const SizedBox(
-              height: 20,
+          ),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        SizedBox(
+                          height: 60,
+                          child: CircleAvatar(
+                            backgroundColor: Colors.green,
+                            child: Center(
+                              child: Text(
+                                model.result[0].totalAnswered,
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text("Answered",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xff1AA19A),
+                                fontWeight: FontWeight.normal)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                      flex: 1,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            height: 60,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.yellow,
+                              child: Center(
+                                child: Text(
+                                  model.result[0].totalSkipped,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Text("Not Skipped",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Color(0xff1AA19A),
+                                  fontWeight: FontWeight.normal)),
+                        ],
+                      )),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        SizedBox(
+                          height: 60,
+                          child: CircleAvatar(
+                            backgroundColor: const Color(0Xffacacac),
+                            child: Center(
+                              child: Text(
+                                model.result[0].totalNotVisited,
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        const Text("Not Visited",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xff1AA19A),
+                                fontWeight: FontWeight.normal)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                      flex: 1,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            height: 60,
+                            child: CircleAvatar(
+                              backgroundColor: const Color(0Xff283593),
+                              child: Center(
+                                child: Text(
+                                  model.result[0].totalMarkedforReview,
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.normal),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          const Text("Mark For Review",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Color(0xff1AA19A),
+                                  fontWeight: FontWeight.normal)),
+                        ],
+                      )),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Subject Wise Summary",
+              style: TextStyle(
+                  color: Color.fromARGB(255, 48, 47, 47),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0xff00716C),
-                        blurRadius: 2.0,
-                        spreadRadius: 0.0,
-                        offset: Offset(2.0, 2.0),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: textColor,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0xff00716C),
+                      blurRadius: 2.0,
+                      spreadRadius: 0.0,
+                      offset: Offset(2.0, 2.0),
+                    )
+                  ],
+                ),
+                height: SizeConfig.screenHeight,
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 5.0),
+                  child: Column(
+                    children: [
+                      Text(model.result[0].subject,
+                          style: const TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700)),
+                      const Divider(color: Colors.white, thickness: 1),
+                      Row(
+                        children: [
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 9,
+                              width: MediaQuery.of(context).size.width / 3.2,
+                              child: Card(
+                                  child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(model.result[0].totalMarks,
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20)),
+                                  const Text(
+                                    "Total Marks",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ))),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 9,
+                              width: MediaQuery.of(context).size.width / 3.2,
+                              child: Card(
+                                  child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(model.result[0].totalQuestions,
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20)),
+                                  const Text(
+                                    "Total Question",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ))),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height / 9,
+                              width: MediaQuery.of(context).size.width / 3.2,
+                              child: Card(
+                                  child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(model.result[0].totalObtainedMarks,
+                                      style: const TextStyle(
+                                          color: textColor,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20)),
+                                  const Text(
+                                    "Got Marks",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ))),
+                        ],
+                      ),
+                      ListTile(
+                          title: const Text(
+                            "Answered",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Text(
+                            model.result[0].totalAnswered,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )),
+                      ListTile(
+                          title: const Text(
+                            "Not Answered",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Text(
+                            model.result[0].noOfUnAttemptedQuestions,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )),
+                      ListTile(
+                          title: const Text(
+                            "Marked for Review",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          trailing: Text(
+                            model.result[0].totalMarkedforReview,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
+                          )),
+                      ListTile(
+                        title: const Text(
+                          "Skipped",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Text(
+                          model.result[0].totalSkipped,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
                       )
                     ],
                   ),
-                  height: MediaQuery.of(context).size.width / 1.5,
-                  width: MediaQuery.of(context).size.width,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 100.0),
-                    child: Column(
-                      children: const [
-                        ListTile(
-                          leading: CircleAvatar(
-                            radius: 10,
-                            backgroundColor: Color(0xff2FC850),
-                          ),
-                          title: Text(
-                            "3",
-                            style: TextStyle(
-                                color: Color(0xff2FC850),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            "Correct",
-                            style: TextStyle(
-                                color: Color(0xff2FC850),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                        ListTile(
-                          leading: CircleAvatar(
-                            radius: 10,
-                            backgroundColor: Color(0xffC8412F),
-                          ),
-                          title: Text(
-                            "0",
-                            style: TextStyle(
-                                color: Color(0xffC8412F),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            "Wrong",
-                            style: TextStyle(
-                                color: Color(0xffC8412F),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ), //2F91C8
-                        ListTile(
-                          leading: CircleAvatar(
-                            radius: 10,
-                            backgroundColor: Color(0xff2F91C8),
-                          ),
-                          title: Text(
-                            "0",
-                            style: TextStyle(
-                                color: Color(0xff2F91C8),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(
-                            "Unattempted",
-                            style: TextStyle(
-                                color: Color(0xff2F91C8),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Helper().customMaterialButton2(
-              bName: "Continue",
-              context: context,
-              fSize: 24,
-              fweight: FontWeight.w500,
-              press: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const UploadScreen()));
-              },
-            ),
-          ],
-        ),
+                )),
+          ),
+        ],
       ),
     );
   }

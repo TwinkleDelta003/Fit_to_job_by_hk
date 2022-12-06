@@ -111,6 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 fSize: 26,
                 fweight: FontWeight.bold,
                 press: () {
+                  // Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => const Jobprofile()));
                   errorLens1();
                 },
               ),

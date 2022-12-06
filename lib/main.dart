@@ -3,6 +3,7 @@ import 'package:fit_to_job/Screens/Authentication/login_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/home_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/rules_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/select_language.dart';
+import 'package:fit_to_job/Screens/CommonScreen/subjob_profile.dart';
 import 'package:fit_to_job/Screens/CommonScreen/test_screen.dart';
 import 'package:fit_to_job/Screens/Connection/InitialBind.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
@@ -28,6 +29,8 @@ Future<void> main() async {
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
   SharedPreferences prefs = await SharedPreferences.getInstance();
+    var mobileNo = prefs.getString('mobileNo');
+    debugPrint(mobileNo.toString());
   Locale local;
 
   local = prefs.getString('lang') == null
@@ -46,6 +49,7 @@ Future<void> main() async {
       GetPage(name: '/language', page: () => const SelectLanguage()),
       GetPage(name: '/login', page: () => const LoginScreen()),
       GetPage(name: '/selectjob', page: () => const Jobprofile()),
+      GetPage(name: '/subjobprofile', page: () => const SubJobProfile()),
       GetPage(name: '/homescreen', page: () => const HomeScreen()),
       GetPage(name: '/rulescreen', page: () => const RuleScreen()),
       GetPage(name: '/testscreen', page: () => const TestScreen()),
@@ -59,7 +63,7 @@ Future<void> main() async {
       tabBarTheme: TabBarTheme(labelColor: buildMaterialColor(textColor)),
       textTheme: GoogleFonts.nunitoSansTextTheme(),
     ),
-    // home: mobile == null ? SplashScreen() : DashboardScreen1(),
-    home: const Splashscreen(),
+    home: mobileNo == null ? const Splashscreen() : const HomeScreen(),
+    // home: const UploadScreen(),
   ));
 }
