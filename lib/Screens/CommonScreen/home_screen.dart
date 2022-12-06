@@ -1062,9 +1062,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         CupertinoDialogAction(
                             child: Text('Yes'.tr),
                             onPressed: () {
-                              removeValues().then((value) {
+                              removeValues().then((value) async {
                                 Get.offAllNamed('/login');
+                                  SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.remove('designation');
+                               
                               });
+                            
                             }),
                         CupertinoDialogAction(
                             child: Text('No'.tr), onPressed: () => Get.back()),
@@ -1145,7 +1150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: 10,
                               ),
                               Text(
-                                designation.toString(),
+                              designation.toString(),
                                 style: const TextStyle(
                                     color: textColor,
                                     fontSize: 18,
@@ -1224,44 +1229,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _homeViewUI() {
-    return RefreshIndicator(
-      triggerMode: RefreshIndicatorTriggerMode.onEdge,
-      onRefresh: () async {
-        await Future.delayed(const Duration(seconds: 2));
-        setState(() {
-          testViewListAPI(
-              RegistrationId: registrationId.toString(),
-              date: DateTime.now().toString());
-        });
-      },
-      child: SizedBox(
-          height: MediaQuery.of(context).size.height / 2,
-          width: MediaQuery.of(context).size.width,
-          child: FutureBuilder(
-              future: testViewListAPI(
-                  date: DateTime.now().toString(),
-                  RegistrationId: registrationId.toString()),
-              builder: (context, snapshot) {
-                if (snapshot.data == null) {
-                  return Center(
-                      child: snapshot.connectionState != ConnectionState.done
-                          ? const CircularProgressIndicator()
-                          : Helper()
-                              .customText(text: "No Data Found", fontSize: 20));
-                } else {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height / 2,
-                    width: MediaQuery.of(context).size.width,
-                    child: ListView.builder(
-                        itemCount: snapshot.data.result.length,
-                        itemBuilder: (context, index) {
-                          var list = snapshot.data.result[index];
-                          return _homeUISetup(model: HomeModel(result: [list]));
-                        }),
-                  );
-                }
-              })),
-    );
+    return SizedBox(
+        height: MediaQuery.of(context).size.height / 2,
+        width: MediaQuery.of(context).size.width,
+        child: FutureBuilder(
+            future: testViewListAPI(
+                date: DateTime.now().toString(),
+                RegistrationId: registrationId.toString()),
+            builder: (context, snapshot) {
+              if (snapshot.data == null) {
+                return Center(
+                    child: snapshot.connectionState != ConnectionState.done
+                        ? const CircularProgressIndicator()
+                        : Helper()
+                            .customText(text: "No Data Found", fontSize: 20));
+              } else {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height / 2,
+                  width: MediaQuery.of(context).size.width,
+                  child: ListView.builder(
+                      itemCount: snapshot.data.result.length,
+                      itemBuilder: (context, index) {
+                        var list = snapshot.data.result[index];
+                        return _homeUISetup(model: HomeModel(result: [list]));
+                      }),
+                );
+              }
+            }));
   }
 
   _modalBottomSheetAssessment(HomeModel model) {

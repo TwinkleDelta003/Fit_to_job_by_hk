@@ -46,13 +46,13 @@ class LocalStorage {
   }
 
   saveProfile({
-    String Designation, 
+  
     String designation,
-    String deptName}) async {
+    }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('Designation', Designation);
+    
     prefs.setString('designation', designation);
-    prefs.setString('deptName', deptName);
+    
   }
 
   // saveVerify({

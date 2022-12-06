@@ -28,6 +28,11 @@ Future<SubjobProfileModel> getsubprofile(
       body: {"StaffCategory": StaffCategory});
   var data = json.decode(response.body);
   if (data['status'] == "200") {
+    // LocalStorage().saveProfile(
+
+    //   designation: SubjobProfileModel.fromJson(data).result[0].designation,
+    //   deptName: SubjobProfileModel.fromJson(data).result[0].deptName,
+    // );
     Get.offNamed('/subjobprofile', arguments: [StaffCategory.toString()]);
     return SubjobProfileModel.fromJson(data);
   } else {
@@ -38,42 +43,47 @@ Future<SubjobProfileModel> getsubprofile(
 
 //Get profile
 
-Future<profileModel> getprofile(
-    {String Designation, BuildContext context}) async {
-  final response = await http
-      .post(Uri.parse(profileAPIURL), body: {"Designation": Designation});
-  var data = json.decode(response.body);
-  if (data['status'] == "200") {
-    LocalStorage().saveProfile(
-      Designation: Designation,
-      designation: profileModel.fromJson(data).result[0].designation,
-      deptName: profileModel.fromJson(data).result[0].deptName,
-    );
-    //  Get.offNamed('/uploadscreen', arguments: [StaffCategory]);
-    Get.offNamed('/homescreen', arguments: [Designation]);
-    return profileModel.fromJson(data);
-  } else {
-    debugPrint("Something went Wrong");
-    return profileModel.fromJson(data);
-  }
-}
+// Future<profileModel> getprofile(
+//     {String Designation, BuildContext context}) async {
+//   final response = await http
+//       .post(Uri.parse(profileAPIURL), body: {"Designation": Designation});
+//   var data = json.decode(response.body);
+//   if (data['status'] == "200") {
+//     LocalStorage().saveProfile(
+//       Designation: Designation,
+//       designation: profileModel.fromJson(data).result[0].designation,
+//       deptName: profileModel.fromJson(data).result[0].deptName,
+//     );
+//     //  Get.offNamed('/uploadscreen', arguments: [StaffCategory]);
+//     Get.offNamed('/homescreen', arguments: [Designation]);
+//     return profileModel.fromJson(data);
+//   } else {
+//     debugPrint("Something went Wrong");
+//     return profileModel.fromJson(data);
+//   }
+// }
 
-Future<profileModel> updateprofile(
-    {String JobOfferingId, String RegistrationId, BuildContext context}) async {
-  final response = await http
-      .post(Uri.parse(updateprofileURL), body: {"Designation": JobOfferingId});
+Future updateprofile(
+    {String JobOfferingId,
+    String RegistrationId,
+    BuildContext context,
+    String designation}) async {
+  final response = await http.post(
+      Uri.parse(
+          "http://110.227.253.77:90/DeltaFitToJob/API/API_UpdateJobOfferingIdRegistrations.aspx"),
+      body: {"JobOfferingId": JobOfferingId, "RegistrationId": RegistrationId});
   var data = json.decode(response.body);
   if (data['status'] == "200") {
     LocalStorage().saveProfile(
-      Designation: JobOfferingId,
-      designation: profileModel.fromJson(data).result[0].designation,
-      deptName: profileModel.fromJson(data).result[0].deptName,
+      designation: designation,
     );
-    //  Get.offNamed('/uploadscreen', arguments: [StaffCategory]);
-    Get.offNamed('/homescreen', arguments: [JobOfferingId]);
-    return profileModel.fromJson(data);
+
+    Get.offNamed(
+      '/homescreen',
+    );
+    return data;
   } else {
     debugPrint("Something went Wrong");
-    return profileModel.fromJson(data);
+    return data;
   }
 }

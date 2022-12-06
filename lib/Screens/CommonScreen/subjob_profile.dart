@@ -1,5 +1,6 @@
 import 'package:fit_to_job/Screens/Connection/Connection.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
+import 'package:fit_to_job/Screens/Constant/apiPath.dart';
 import 'package:fit_to_job/Screens/Constant/imagePath.dart';
 import 'package:fit_to_job/Screens/Constant/responsive.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class SubJobProfileState extends State<SubJobProfile> {
   final GetXNetworkManager _networkManager = Get.put(GetXNetworkManager());
   final List<String> _selectedValues = [];
   var data = Get.arguments;
-    String registrationId;
+  String registrationId;
   String firstName;
   String designation;
   getUserId() async {
@@ -33,11 +34,15 @@ class SubJobProfileState extends State<SubJobProfile> {
       designation = prefs.getString('designation');
     });
   }
+
   @override
   void initState() {
     getUserId();
     super.initState();
   }
+
+  String designId;
+  String designname;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,15 +179,17 @@ class SubJobProfileState extends State<SubJobProfile> {
                               var list = snapshot.data.result[index];
                               return InkWell(
                                 onTap: () {
-
                                   setState(() {
                                     if (_selectedValues
                                         .contains(list.designation)) {
-                                      _selectedValues
-                                          .remove(list.designation);
+                                      _selectedValues.remove(list.designation);
                                     } else {
                                       _selectedValues.add(list.designation);
                                     }
+                                    // debugPrint(list.designationId);
+
+                                    designId = list.designationId;
+                                    designname = list.designation;
                                   });
                                 },
                                 child: jobUI(
@@ -190,50 +197,6 @@ class SubJobProfileState extends State<SubJobProfile> {
                               );
                             });
                       }
-                      // else if (snapshot.data == null) {
-                      //   return Center(
-                      //       child: Center(
-                      //           child: snapshot.connectionState !=
-                      //                   ConnectionState.done
-                      //               ? const CircularProgressIndicator()
-                      //               : Helper().customText(
-                      //                   text: "No Data Available".tr,
-                      //                   fontSize: 22,
-                      //                   align: TextAlign.center)));
-                      // }
-                      // else {
-                      //   return GridView.builder(
-                      //       padding: const EdgeInsets.all(10),
-                      //       physics: const BouncingScrollPhysics(),
-                      //       gridDelegate:
-                      //           const SliverGridDelegateWithFixedCrossAxisCount(
-                      //         childAspectRatio: 16 / 11,
-                      //         crossAxisCount: 2,
-                      //         crossAxisSpacing: 10,
-                      //         mainAxisSpacing: 10,
-                      //       ),
-                      //       scrollDirection: Axis.vertical,
-                      //       shrinkWrap: true,
-                      //       itemCount: snapshot.data.result.length,
-                      //       itemBuilder: (context, index) {
-                      //         var list = snapshot.data.result[index];
-                      //         return InkWell(
-                      //           onTap: () {
-                      //             setState(() {
-                      //               if (_selectedValues
-                      //                   .contains(list.staffCategory)) {
-                      //                 _selectedValues
-                      //                     .remove(list.staffCategory);
-                      //               } else {
-                      //                 _selectedValues.add(list.staffCategory);
-                      //               }
-                      //             });
-                      //           },
-                      //           child: jobUI(
-                      //               model: SubjobProfileModel(result: [list])),
-                      //         );
-                      //       });
-                      // }
                     },
                   ),
                   const SizedBox(
@@ -298,6 +261,20 @@ class SubJobProfileState extends State<SubJobProfile> {
                 fWeight: FontWeight.bold,
                 overflow: TextOverflow.fade),
           ),
+          // InkWell(
+          //   onTap: (() {
+          //     debugPrint(model.result[0].designationId);
+          //   }),
+          //   child: Align(
+          //             alignment: Alignment.center,
+          //             child: Helper().customText1(
+          //     text: model.result[0].designationId,
+          //     fontSize: 0,
+          //     align: TextAlign.center,
+          //     fWeight: FontWeight.bold,
+          //     overflow: TextOverflow.fade),
+          //           ),
+          // ),
         ],
       ),
     );
@@ -311,22 +288,12 @@ class SubJobProfileState extends State<SubJobProfile> {
           press: () {},
           msg: "Select Job Profile",
           chooseColor: Colors.red));
-    }
-    //  else if (_selectedValues.length > 1) {
-    //   ScaffoldMessenger.of(context).showSnackBar(customSnackbar(
-    //       label: "",
-    //       time: const Duration(seconds: 5),
-    //       press: () {},
-    //       msg: "Select less than 1 value",
-    //       chooseColor: Colors.red));
-    // } 
-    else {
+    } else {
       updateprofile(
-           JobOfferingId:"af4b3936-f046-4ed1-8bc3-9d90a93e0bc6"
-              .toString()
-              .replaceAll("[", "")
-              .replaceAll("]", ""),
-              RegistrationId: registrationId,
+          designation: designname,
+          JobOfferingId:
+              designId.toString().replaceAll("[", "").replaceAll("]", ""),
+          RegistrationId: registrationId,
           context: context);
     }
   }
