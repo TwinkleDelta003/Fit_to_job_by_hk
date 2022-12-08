@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:fit_to_job/Screens/CommonScreen/uploaddone_screen.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
+import 'package:fit_to_job/Screens/Constant/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,26 +59,30 @@ class _UploadScreenState extends State<UploadScreen> {
     });
   }
 
-  Future uploadImage() async {
+  Future uploadDocs() async {
     var url =
-        "http://110.227.253.77:90/DeltaFitToJob/API/RegistrationVerifications.aspx";
+        "http://110.227.253.77:90/DeltaFitToJob/API/API_RegistrationVerifications.aspx";
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
+    request.fields['RegistrationId'] = "8b80678a-3a72-4795-b7fc-e5742c7b5f6d";
 
     var pic = await http.MultipartFile.fromPath("PhotoPath", _image.path);
+    var video =
+        await http.MultipartFile.fromPath("SelfIntroVideoPath", videoPath);
+    var resume =
+        await http.MultipartFile.fromPath("ResumeUpload", _resumePath.path);
 
     request.files.add(pic);
+    request.files.add(video);
+    request.files.add(resume);
     var response = await request.send();
 
     var responsed = await http.Response.fromStream(response);
     final responseJson = json.decode(responsed.body);
 
-    return responseJson;
-
-    // debugPrint(responseJson);
-    // debugPrint(registrationId);
+    print(responseJson);
   }
 
+  File _resumePath;
   Future<void> _playVideo(XFile file) async {
     if (file != null && mounted) {
       debugPrint("Loading Video");
@@ -114,58 +118,58 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 
-  Future uploadVideo() async {
-    var url =
-        "http://110.227.253.77:90/DeltaFitToJob/API/API_SelfIntroVideo.aspx";
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
+  // Future uploadVideo() async {
+  //   var url =
+  //       "http://110.227.253.77:90/DeltaFitToJob/API/API_SelfIntroVideo.aspx";
+  //   var request = http.MultipartRequest('POST', Uri.parse(url));
+  //   request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
 
-    var video = await http.MultipartFile.fromPath(
-        "SelfIntroVideoPath", videoPath.toString());
+  //   var video = await http.MultipartFile.fromPath(
+  //       "SelfIntroVideoPath", videoPath.toString());
 
-    request.files.add(video);
-    var response = await request.send();
+  //   request.files.add(video);
+  //   var response = await request.send();
 
-    var responsed = await http.Response.fromStream(response);
-    final responseJson = json.decode(responsed.body);
+  //   var responsed = await http.Response.fromStream(response);
+  //   final responseJson = json.decode(responsed.body);
 
-    if (responseJson['status'] == "209") {
-      Helper().customSnackbar(
-        bgColor: Colors.red,
-        msgColor: Colors.white,
-        message: responseJson['message'],
-        duration: const Duration(seconds: 2),
-        title: "Error",
-        icon: const Icon(Icons.check),
-      );
-      debugPrint(responseJson);
-    }
-    return responseJson;
-  }
+  //   if (responseJson['status'] == "209") {
+  //     Helper().customSnackbar(
+  //       bgColor: Colors.red,
+  //       msgColor: Colors.white,
+  //       message: responseJson['message'],
+  //       duration: const Duration(seconds: 2),
+  //       title: "Error",
+  //       icon: const Icon(Icons.check),
+  //     );
+  //     debugPrint(responseJson);
+  //   }
+  //   return responseJson;
+  // }
 
-  Future uploadFile() async {
-    var url =
-        "http://110.227.253.77:90/DeltaFitToJob/API/API_UploadResume.aspx";
-    var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
-    var uploadfile = await http.MultipartFile.fromPath(
-        "ResumeUpload", uploadFile.toString());
-    request.files.add(uploadfile);
-    var response = await request.send();
-    var responsed = await http.Response.fromStream(response);
-    final responseJson = json.decode(responsed.body);
-    if (responseJson['status'] == "209") {
-      Helper().customSnackbar(
-        bgColor: Colors.red,
-        msgColor: Colors.white,
-        message: responseJson['message'],
-        duration: const Duration(seconds: 2),
-        title: "Error",
-        icon: const Icon(Icons.check),
-      );
-      debugPrint(responseJson);
-    }
-  }
+  // Future uploadFile() async {
+  //   var url =
+  //       "http://110.227.253.77:90/DeltaFitToJob/API/API_UploadResume.aspx";
+  //   var request = http.MultipartRequest('POST', Uri.parse(url));
+  //   request.fields['RegistrationId'] = "b1660f38-e7fc-405a-bd8b-e16c25479db7";
+  //   var uploadfile = await http.MultipartFile.fromPath(
+  //       "ResumeUpload", uploadFile.toString());
+  //   request.files.add(uploadfile);
+  //   var response = await request.send();
+  //   var responsed = await http.Response.fromStream(response);
+  //   final responseJson = json.decode(responsed.body);
+  //   if (responseJson['status'] == "209") {
+  //     Helper().customSnackbar(
+  //       bgColor: Colors.red,
+  //       msgColor: Colors.white,
+  //       message: responseJson['message'],
+  //       duration: const Duration(seconds: 2),
+  //       title: "Error",
+  //       icon: const Icon(Icons.check),
+  //     );
+  //     debugPrint(responseJson);
+  //   }
+  // }
 
   Widget _previewResume() {
     if (_controller == null) {
@@ -174,20 +178,26 @@ class _UploadScreenState extends State<UploadScreen> {
         textAlign: TextAlign.center,
       );
     }
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
+    return const Padding(
+      padding: EdgeInsets.all(10.0),
       // child: _openFile(file),
     );
   }
 
 // Pick File and Open
-  // Future  _pickFile() async {
-  //   final result = await FilePicker.platform.pickFiles(allowMultiple: true);
-  //   if (result == null) return;
-  //   final file = result.files.first;
+  Future _selectResume() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles();
 
-  //   _openFile(file);
-  // }
+    if (result != null) {
+      _resumePath = File(result.files.single.path);
+
+      snackBar(context, "Resume Selected");
+      print(_resumePath);
+    } else {
+      snackBar(context, "No file selected");
+    }
+  }
+
   // Get.dialog(AlertDialog(
   //   title: Text("Your Image".tr),
   //   content: _openFile(file),
@@ -449,7 +459,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                                           press: () {
                                                             debugPrint(
                                                                 _image.path);
-                                                            uploadImage();
+                                                            // uploadImage();
 
                                                             Get.back();
                                                           }),
@@ -539,10 +549,10 @@ class _UploadScreenState extends State<UploadScreen> {
                                                               Get.back();
                                                               videoPath =
                                                                   file.path;
-                                                              uploadVideo();
+                                                              // uploadVideo();
 
                                                               debugPrint(
-                                                                  "String Path $videoPath");
+                                                                  "Video Path $videoPath");
                                                               _disposeVideoController();
                                                             }),
                                                   )
@@ -602,16 +612,15 @@ class _UploadScreenState extends State<UploadScreen> {
                                 padding: const EdgeInsets.all(14.0),
                                 child: InkWell(
                                   onTap: () async {
-                                    _pickFile() async {
-                                      final result = await FilePicker.platform
-                                          .pickFiles(allowMultiple: true);
-                                      if (result == null) return;
-                                      final file = result.files.first;
+                                    _selectResume();
+                                    // _pickFile() async {
+                                    //   final result = await FilePicker.platform
+                                    //       .pickFiles(allowMultiple: true);
+                                    //   if (result == null) return;
+                                    //   final file = result.files.first;
 
-                                      _openFile(file).whenComplete(() => {
-                                        
-                                      });
-                                    }
+                                    //   _openFile(file).whenComplete(() => {});
+                                    // }
                                     // final XFile file =
                                     //     await _picker.pickVideo(
                                     //   source: ImageSource.camera,
@@ -733,10 +742,7 @@ class _UploadScreenState extends State<UploadScreen> {
                           fSize: 24,
                           fweight: FontWeight.w500,
                           press: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => const DoneScreen()));
+                            uploadDocs();
                           },
                         ),
                         const SizedBox(

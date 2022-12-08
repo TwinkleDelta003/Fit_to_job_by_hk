@@ -13,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Screens/CommonScreen/Splash_Screen.dart';
+import 'Screens/CommonScreen/interviewform_screen.dart';
 import 'Screens/CommonScreen/job_profile.dart';
 import 'Screens/CommonScreen/result_screen.dart';
 import 'Screens/CommonScreen/uploaddoc_screen.dart';
@@ -64,6 +65,6 @@ Future<void> main() async {
       textTheme: GoogleFonts.nunitoSansTextTheme(),
     ),
     home: mobileNo == null ? const Splashscreen() : const HomeScreen(),
-    // home: const UploadScreen(),
+    // home: const InterviewScreen(),
   ));
 }

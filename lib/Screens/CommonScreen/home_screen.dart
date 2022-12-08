@@ -992,6 +992,7 @@
 import 'package:fit_to_job/API/Controller/question_controller.dart';
 import 'package:fit_to_job/API/Model/assessment_model.dart';
 import 'package:fit_to_job/API/Model/home_model.dart';
+import 'package:fit_to_job/Screens/CommonScreen/interviewform_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/question_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/result_screen.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
@@ -1064,12 +1065,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             onPressed: () {
                               removeValues().then((value) async {
                                 Get.offAllNamed('/login');
-                                  SharedPreferences prefs =
+                                SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 prefs.remove('designation');
-                               
                               });
-                            
                             }),
                         CupertinoDialogAction(
                             child: Text('No'.tr), onPressed: () => Get.back()),
@@ -1150,7 +1149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: 10,
                               ),
                               Text(
-                              designation.toString(),
+                                designation.toString(),
                                 style: const TextStyle(
                                     color: textColor,
                                     fontSize: 18,
@@ -1200,14 +1199,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         SizedBox(
                             width: MediaQuery.of(context).size.width / 2.5),
                         InkWell(
-                          onTap: () async {
-                            await Future.delayed(const Duration(seconds: 2));
-                            setState(() {
-                              testViewListAPI(
-                                  RegistrationId: registrationId.toString(),
-                                  date: DateTime.now().toString());
-                            });
+                          onTap: () {
+                            Get.to(() => const InterviewScreen());
                           },
+                          //  () async {
+                          //   await Future.delayed(const Duration(seconds: 2));
+                          //   setState(() {
+                          //     testViewListAPI(
+                          //         RegistrationId: registrationId.toString(),
+                          //         date: DateTime.now().toString());
+                          //   });
+                          // },
                           // () {
                           //   testViewListAPI(
                           //       RegistrationId: registrationId.toString(),

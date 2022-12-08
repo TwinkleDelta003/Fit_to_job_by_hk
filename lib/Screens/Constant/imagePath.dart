@@ -43,3 +43,4 @@ String remain = "assets/images/remain.png";
 String upload = "assets/images/upload.png";
 String doc = "assets/images/doc.png";
 String righttick = "assets/images/righttick.png";
+String adharCard = "assets/images/adharcard.jpg";
