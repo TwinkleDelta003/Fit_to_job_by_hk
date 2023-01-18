@@ -41,6 +41,7 @@ class SubJobProfileState extends State<SubJobProfile> {
     super.initState();
   }
 
+  String jobOffer;
   String designId;
   String designname;
   @override
@@ -190,6 +191,7 @@ class SubJobProfileState extends State<SubJobProfile> {
 
                                     designId = list.designationId;
                                     designname = list.designation;
+                                    jobOffer = list.jobOfferingId;
                                   });
                                 },
                                 child: jobUI(
@@ -291,8 +293,10 @@ class SubJobProfileState extends State<SubJobProfile> {
     } else {
       updateprofile(
           designation: designname,
+          // JobOfferingId:
+          //     designId.toString().replaceAll("[", "").replaceAll("]", ""),
           JobOfferingId:
-              designId.toString().replaceAll("[", "").replaceAll("]", ""),
+              jobOffer.toString().replaceAll("[", "").replaceAll("]", ""),
           RegistrationId: registrationId,
           context: context);
     }

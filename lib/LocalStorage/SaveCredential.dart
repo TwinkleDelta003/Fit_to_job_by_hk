@@ -48,10 +48,12 @@ class LocalStorage {
   saveProfile({
   
     String designation,
+    String jobOfferingId,
     }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
     prefs.setString('designation', designation);
+    prefs.setString('jobOfferingId', jobOfferingId);
     
   }
 

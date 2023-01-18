@@ -4,6 +4,29 @@ import 'package:pinput/pinput.dart';
 import '../Constant/Colorpath.dart';
 
 class Helper {
+    Widget customCount(
+      {String bName,
+      double height,
+      double width,
+      FontWeight fweight,
+      fColor,
+      context}) {
+    return Container(
+        width: 25,
+        height: 25,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            gradient: const LinearGradient(
+              colors: [btnColor1, btnColor2],
+            )),
+        child: Center(
+          child: Text(
+            bName,
+            style: TextStyle(
+                color: Colors.white, fontSize: height, fontWeight: fweight),
+          ),
+        ));
+  }
   Widget customText(
       {String text,
       double fontSize,
@@ -95,7 +118,7 @@ class Helper {
     );
   }
 
-  Widget customTextField({
+  Widget customTextField( {
     String hintText,
     List<TextInputFormatter> inputFormatter,
     TextEditingController controller,
@@ -110,7 +133,7 @@ class Helper {
     Widget prefix,
     String initText,
     String lText,
-    bool autoFocus,
+    
   }) {
     return Container(
       width: MediaQuery.of(context).size.width / 1.3,
@@ -119,7 +142,7 @@ class Helper {
         textInputAction: TextInputAction.next,
         inputFormatters: inputFormatter,
         maxLength: mLength,
-        autofocus: autoFocus ?? true,
+        
         enabled: isEnabled,
         onChanged: onChange,
         maxLines: maxLines,

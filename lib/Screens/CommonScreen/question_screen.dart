@@ -1,14 +1,10 @@
 import 'package:fit_to_job/API/Model/view_summary.dart';
-import 'package:fit_to_job/Screens/CommonScreen/quiz.dart';
-import 'package:fit_to_job/Screens/CommonScreen/result.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:async';
 import '../../API/Controller/question_controller.dart';
-import '../../API/Model/FinalSubmit_model.dart';
 import '../../API/Model/question_model.dart';
 import '../Constant/Colorpath.dart';
 import '../Constant/responsive.dart';
@@ -22,6 +18,8 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
+  int activeIndex = 0;
+  int lengthofQue = 0;
   String registrationId;
   String firstName;
   String designation;
@@ -34,8 +32,23 @@ class _QuestionScreenState extends State<QuestionScreen> {
     });
   }
 
+  DateTime start;
+  void addDuration() async {
+    start = DateTime.now().add(Duration(minutes: totalMins1));
+  }
+
+  void apiSubmitExam() async {
+    finalsubmitAPI(
+        ExamScheduleId: data[1],
+        InsertedByUserId: data[1],
+        RegistrationId: data[5],
+        StopLat: "0.00",
+        StopLong: "0.00",
+        context: context);
+  }
+
   int totalMins = 0;
-  String totalMins1;
+  int totalMins1 = 0;
 
   var data = Get.arguments;
 
@@ -70,53 +83,52 @@ class _QuestionScreenState extends State<QuestionScreen> {
   int i = 1;
   bool disableAnswer = false;
 
-  //var random_array;
-
   int count1 = 0;
   int count2 = 0;
   int count3 = 0;
   int count4 = 0;
   int count5 = 0;
 
-  Timer countdownTimer;
-  Duration myDuration;
-
   String minutes = "";
   String seconds = "";
 
   String group;
 
-  static int activeIndex = 0;
-  int lengthofQue = 0;
-  void _answerQuestion() {
-    setState(() {
-      activeIndex = activeIndex + 1;
-    });
-    // ignore: avoid_print
-    print(activeIndex);
-    if (activeIndex < lengthofQue) {
-    } else {}
-  }
+  // void _answerQuestion() {
+  //   setState(() {
+  //     activeIndex = activeIndex + 1;
+  //   });
+
+  //   print(activeIndex);
+  //   if (activeIndex < lengthofQue) {
+  //   } else {}
+  // }
 
   final _controller = CarouselController();
   void next() => _controller.nextPage(
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.ease,
       );
   void previous() => _controller.previousPage(
-      duration: Duration(milliseconds: 500), curve: Curves.ease);
-
+      duration: const Duration(milliseconds: 500), curve: Curves.ease);
+  var data1;
   @override
   void initState() {
-    _answerQuestion();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      totalMins > 0;
+
+      setState(() {
+        _start--;
+      });
+    });
+    // _answerQuestion();
     getUserId();
-    debugPrint(registrationId);
+    addDuration();
     testId = data[0];
     examScheduleId = data[1];
     subId = data[2];
     subName = data[3];
     totalExamTime = data[4];
-    startTimer();
     super.initState();
     questionListAPI(
             TestId: testId,
@@ -125,49 +137,58 @@ class _QuestionScreenState extends State<QuestionScreen> {
         .then((value) => {
               if (value.status == "200")
                 {
-                  for (i = 1; i < value.result.length; i++)
-                    {
-                      setState(() {
-                        lengthofQue = value.result.length;
-                        totalMins = int.parse(value.result[0].totalMins);
-                        _start = int.parse(value.result[0].totalMins);
-                        totalMins1 = value.result[0].totalMins;
-                      }),
-                    }
+                  setState(() {
+                    lengthofQue = value.result.length;
+                    totalMins = int.parse(value.result[0].totalMins);
+                    _start = int.parse(value.result[0].totalMins);
+                    totalMins1 = int.parse(value.result[0].totalMins);
+                    _convertHS = int.parse(totalExamTime);
+                    DateTime start = DateTime.now().add(Duration(
+                        // hours: _convertHS,
+                        minutes: totalMins1
+                        //  minutes: 60 // Remove This minutes from data
+                        ));
+
+                    print(getRemainingTime(start));
+                    getRemainingTime(start);
+                    addDuration();
+                  }),
                 }
-              else
-                {print("No For Loop")}
+              //     for (i = 1; i < value.result.length; i++)
+              //       {
+
+              //       }
+              //   }
+              // else
+              //   {print("No For Loop")}
             });
   }
 
-  String formatDuration(Duration duration) {
-    String hours = duration.inHours.toString().padLeft(0, '2');
-     totalMins1 =
-        duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    String seconds =
-        duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$hours:$minutes:$seconds";
-  }
-
+  bool isSelected = false;
   Timer _timer;
-  int _start;
+  static int _start = 0;
+  // static int _convertHS = 0;
+  // int _start = 0;
+  int _convertHS;
+  int start1;
+  String hhmmss = "";
 
-  void startTimer() {
-    const oneSec = Duration(seconds: 1);
-    _timer = new Timer.periodic(
-      oneSec,
-      (Timer timer) {
-        if (_start == 0) {
-          setState(() {
-            timer.cancel();
-          });
-        } else {
-          setState(() {
-            _start--;
-          });
-        }
-      },
-    );
+  String getRemainingTime(DateTime start) {
+    DateTime now = DateTime.now();
+    var diff = start.difference(now);
+    if (diff.inSeconds <= 0) {
+      Future.delayed(Duration(seconds: 2), () {
+        return "Time Over";
+        // print("This is the computation to be performed.");
+      });
+      // return "Time Over";
+    }
+    int hours = diff.inHours;
+    int minutes = diff.inMinutes % 60;
+    int seconds = diff.inSeconds % 60;
+    // print(hours);
+    // print("$hours:$minutes:$seconds");
+    return "$hours:$minutes:$seconds";
   }
 
   // overriding the setstate function to be called only if mounted
@@ -178,35 +199,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
     }
   }
 
-//   int minutes1 = (totalMinsInt / 60).truncate();
-// String minutesStr = (totalMinsInt % 60).toString().padLeft(2, '0');
-
- 
-
   String gender;
 
-
-
-  formatedTime({int timeInSecond}) {
-    int sec = int.parse(totalMins.toString()) % 60;
-    int min = (int.parse(totalMins.toString()) / 60).floor();
-    String minute = min.toString().length <= 1 ? "0$min" : "$min";
-    String second = sec.toString().length <= 1 ? "0$sec" : "$sec";
-    debugPrint("$minute : $second");
-    return "$minute : $second";
-  }
-
-  final TextEditingController _selectoption = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    myDuration = Duration(minutes: int.parse(totalExamTime));
-
-    String strDigits(int n) => n.toString().padLeft(2, '0');
-    //days = strDigits(myDuration.inDays);
-    //hours = strDigits(myDuration.inHours.remainder(24));
-    minutes = strDigits(myDuration.inMinutes.remainder(60));
-    seconds = strDigits(myDuration.inSeconds.remainder(60));
-    // final _controller = CarouselController();
     return Scaffold(
       backgroundColor: const Color(0xffF6FFFD),
       appBar: AppBar(
@@ -232,7 +228,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _timeLeft(),
+            InkWell(
+              child: _timeLeft(),
+              onTap: () {},
+            ),
 
             const Divider(
               color: Colors.black,
@@ -258,8 +257,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 future: questionListAPI(
                   TestId: testId,
                   ExamScheduleId: examScheduleId,
-                  RegistrationId: registrationId.toString(),
-                  activeIndex: activeIndex,
+                  RegistrationId: registrationId,
+                  // activeIndex: activeIndex,
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.data == null) {
@@ -357,6 +356,58 @@ class _QuestionScreenState extends State<QuestionScreen> {
               )
             ],
           ),
+          model.result[0].perQuestionTime == "False"
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: SizeConfig.screenHeight,
+                    child: Card(
+                      
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      color:  gender == model.result[0].a1 ? Color.fromARGB(255, 198, 229, 255): Colors.white,
+                      child: ListTile(
+                        title: Text(model.result[0].a1),
+                        leading: Radio(
+                          value: model.result[0].a1,
+                          groupValue: gender,
+                          onChanged: (value) async {
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            prefs.setString('gender',value);
+                            setState(() {
+                              gender = model.result[0].a1.toString();
+                            });
+                          },
+                          // activeColor: gender == model.result[0].a1 ? Colors.blue: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ))
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: SizeConfig.screenHeight,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      color:gender == model.result[0].a1 ? Color.fromARGB(255, 198, 229, 255): Colors.white,
+                      child: ListTile(
+                        title: Text(model.result[0].a1),
+                        leading: Radio(
+                            value: model.result[0].a1,
+                            groupValue: gender,
+                            onChanged: (value) {
+                              setState(() {
+                                // gender = value.toString();
+                              });
+                            }),
+                      ),
+                    ),
+                  )),
           Padding(
               padding: const EdgeInsets.all(8.0),
               child: SizedBox(
@@ -366,30 +417,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  color: Colors.white,
-                  child: ListTile(
-                    title: Text(model.result[0].a1),
-                    leading: Radio(
-                        value: model.result[0].a1,
-                        groupValue: gender,
-                        onChanged: (value) {
-                          setState(() {
-                            gender = value.toString();
-                          });
-                        }),
-                  ),
-                ),
-              )),
-          Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: SizeConfig.screenHeight,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  color: Colors.white,
+                  color: gender == model.result[0].a2 ? Color.fromARGB(255, 198, 229, 255): Colors.white,
                   child: ListTile(
                     title: Text(model.result[0].a2),
                     leading: InkWell(
@@ -414,7 +442,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  color: Colors.white,
+                  color: gender == model.result[0].a3 ? Color.fromARGB(255, 198, 229, 255): Colors.white,
                   child: ListTile(
                     title: Text(model.result[0].a3),
                     leading: Radio(
@@ -437,7 +465,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  color: Colors.white,
+                  color: gender == model.result[0].a4 ? Color.fromARGB(255, 198, 229, 255): Colors.white,
                   child: InkWell(
                     onTap: (() {
                       debugPrint(gender);
@@ -470,7 +498,31 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     child: MaterialButton(
                       elevation: 4,
                       onPressed: () {
-                        activeIndex == itemL - 1 ? Get.back() : next();
+                        activeIndex == itemL - 1
+                            ? showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Text(
+                                      "You have answered all Question for " +
+                                          data[3],
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: textColor,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text('Close'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      )
+                                    ],
+                                  );
+                                },
+                              )
+                            : next();
                         insertAPI(
                           QueId: model.result[0].queId,
                           ExamScheduleId: examScheduleId,
@@ -483,9 +535,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
                           QueType: model.result[0].queType,
                           AnsStatus: "",
                         );
-                        setState(() {
-                          gender = null;
-                        });
+                        activeIndex == itemL - 1
+                            ? gender
+                            : setState(() {
+                                gender = null;
+                              });
                       },
                       child: const Text(
                         "Skip",
@@ -514,7 +568,31 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     child: MaterialButton(
                       elevation: 4,
                       onPressed: () {
-                        activeIndex == itemL - 1 ? Get.back() : next();
+                        activeIndex == itemL - 1
+                            ? showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Text(
+                                      "You have answered all Question for " +
+                                          data[3],
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: textColor,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text('Close'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      )
+                                    ],
+                                  );
+                                },
+                              )
+                            : next();
                         insertAPI(
                             QueId: model.result[0].queId,
                             ExamScheduleId: examScheduleId,
@@ -526,9 +604,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             Ans: "SKIPPED",
                             QueType: model.result[0].queType,
                             AnsStatus: "REVIEW");
-                        setState(() {
-                          gender = null;
-                        });
+                        activeIndex == itemL - 1
+                            ? gender
+                            : setState(() {
+                                gender = null;
+                              });
                       },
                       child: const Text(
                         "Mark Review",
@@ -557,7 +637,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                     child: MaterialButton(
                       elevation: 4,
                       onPressed: () {
-                        activeIndex == itemL - 1 ? Get.back() : next();
+                        activeIndex == itemL - 1
+                            ? _modalBottomSheetsubmitSummary()
+                            : next();
                         insertAPI(
                             QueId: model.result[0].queId,
                             ExamScheduleId: examScheduleId,
@@ -576,14 +658,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       },
                       child: Text(
                         activeIndex == itemL - 1 ? "Submit" : "Next",
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black,
                             fontSize: 15,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
                   )),
-              // Text("data")
             ],
           )
         ],
@@ -591,7 +672,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
     );
   }
 
-  Widget _timeLeft({QuestionModel model}) {
+  Widget _timeLeft() {
     return Row(
       children: [
         const SizedBox(
@@ -599,17 +680,18 @@ class _QuestionScreenState extends State<QuestionScreen> {
         ),
         Expanded(
             flex: 1,
-            child: Text(
-              "Left Time:$_start",
-              style: const TextStyle(
-                  color: Color(0xff1AA19A),
-                  fontSize: 15,
-                  fontWeight: FontWeight.normal),
+            child: InkWell(
+              child: Text(
+                "Left Time:${getRemainingTime(start)}",
+                style: const TextStyle(
+                    color: Color(0xff1AA19A),
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal),
+              ),
             )),
         Expanded(
             flex: 1,
             child: Container(
-              //width: MediaQuery.of(context).size.width / 1.2,
               height: 30,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -651,112 +733,70 @@ class _QuestionScreenState extends State<QuestionScreen> {
             return Column(
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(top: 10.0),
+                  padding: EdgeInsets.all(35.0),
                   child: Text(
-                      "Once you Submit exam, you are not able to change answer, are you sure Want to final submit exam?"),
+                    "Once you Submit exam, you are not able to change answer, are you sure Want to final submit exam?",
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height / 2,
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 50,
+                Column(
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width / 1.4,
+                      height: MediaQuery.of(context).size.height / 16,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          gradient: const LinearGradient(
+                            colors: [Color(0Xffc6a700), Color(0Xffffff6b)],
+                          )),
+                      child: MaterialButton(
+                        elevation: 4,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
                         ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 1.4,
-                          height: MediaQuery.of(context).size.height / 16,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              gradient: const LinearGradient(
-                                colors: [Color(0Xffc6a700), Color(0Xffffff6b)],
-                              )),
-                          child: MaterialButton(
-                            elevation: 4,
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text(
-                              "Cancel",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 1.4,
-                          height: MediaQuery.of(context).size.height / 16,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              gradient: const LinearGradient(
-                                colors: [Color(0Xff5f5fc4), Color(0Xff001064)],
-                              )),
-                          child: MaterialButton(
-                            elevation: 4,
-                            onPressed: () {
-                              finalsubmitAPI(
-                                ExamScheduleId: examScheduleId,
-                                InsertedByUserId: registrationId,
-                                //  registrationId,
-                                // "72d83e5f-4ea1-432b-a2bf-8530c53eb9db",
-                                RegistrationId: registrationId,
-                                StopLat: "",
-                                StopLong: "",
-                              );
-                            },
-                            child: const Text(
-                              "Finish",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                    // FutureBuilder(
-                    //     future: finalsubmitAPI(
-                    //       ExamScheduleId: examScheduleId,
-                    //       InsertedByUserId:
-                    //           "262ED588-2F86-4437-9A90-9A3DAAF1AF4C",
-                    //       RegistrationId: registrationId.toString(),
-                    //       StopLat: "",
-                    //       StopLong: "",
-                    //     ),
-                    //     builder: (context, snapshot) {
-                    //       if (snapshot.data == null) {
-                    //         return Center(
-                    //             child: Center(
-                    //                 child: snapshot.connectionState !=
-                    //                         ConnectionState.done
-                    //                     ? const CircularProgressIndicator()
-                    //                     : Helper().customText(
-                    //                         text: "No Data Found",
-                    //                         fontSize: 20)));
-                    //       } else {
-                    //         return SizedBox(
-                    //           height: MediaQuery.of(context).size.height / 2,
-                    //           width: MediaQuery.of(context).size.width,
-                    //           child: ListView.builder(
-                    //               //itemCount: snapshot.data.result.length,
-                    //               itemCount: 1,
-                    //               itemBuilder: (context, index) {
-                    //                 var list = snapshot.data.result[index];
-                    //                 return Container(
-                    //                     child: _finalsubmitUI(
-                    //                         model: Finalsubmitmodel(
-                    //                             result: [list])));
-                    //               }),
-                    //         );
-                    //       }
-                    //     })
+                      ),
                     ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width / 1.4,
+                      height: MediaQuery.of(context).size.height / 16,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          gradient: const LinearGradient(
+                            colors: [Color(0Xff5f5fc4), Color(0Xff001064)],
+                          )),
+                      child: MaterialButton(
+                        elevation: 4,
+                        onPressed: () {
+                          apiSubmitExam();
+                          // finalsubmitAPI(
+                          //   ExamScheduleId: data[1],
+                          //   InsertedByUserId: data[1],
+                          //   RegistrationId: data[5],
+                          //   StopLat: "0.00",
+                          //   StopLong: "0.00",
+                          // );
+                        },
+                        child: Text(
+                          "Finish",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             );
           });
@@ -787,6 +827,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 elevation: 4,
                 onPressed: () {},
                 child: Text(
+                  //  designation,
                   data[3],
                   style: const TextStyle(
                       color: Colors.white,
@@ -829,17 +870,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
   }
 
   Widget _pageViewver() {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height / 1.8,
       child: PageView(
         controller: controller,
-        children: _list,
         scrollDirection: Axis.horizontal,
         onPageChanged: (num) {
           setState(() {
             _curr = num;
           });
         },
+        children: _list,
       ),
     );
     /*return PageView(
@@ -1029,8 +1070,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           const SizedBox(
             height: 10,
           ),
-
-          Text(model.result[0].queNo,
+          Text(model.result[0].queNo + model.result[0].queType,
               style: const TextStyle(
                   fontSize: 20,
                   color: Color(0xff1AA19A),
@@ -1044,154 +1084,154 @@ class _QuestionScreenState extends State<QuestionScreen> {
           const SizedBox(
             height: 10,
           ),
-          const Text("Summary",
-              style: TextStyle(
-                  fontSize: 20,
-                  color: Color(0xff1AA19A),
-                  fontWeight: FontWeight.normal)),
-          Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(
-                          height: 60,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.green,
-                            child: Center(
-                              child: Text(
-                                count1.toString(),
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text("Answered",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xff1AA19A),
-                                fontWeight: FontWeight.normal)),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            height: 60,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.yellow,
-                              child: Center(
-                                child: Text(
-                                  count2.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          const Text("Skipped",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Color(0xff1AA19A),
-                                  fontWeight: FontWeight.normal)),
-                        ],
-                      )),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(
-                          height: 60,
-                          child: CircleAvatar(
-                            backgroundColor: const Color(0Xffacacac),
-                            child: Center(
-                              child: Text(
-                                count3.toString(),
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.normal),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Text("Not Visited",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Color(0xff1AA19A),
-                                fontWeight: FontWeight.normal)),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            height: 60,
-                            child: CircleAvatar(
-                              backgroundColor: const Color(0Xff283593),
-                              child: Center(
-                                child: Text(
-                                  count4.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.normal),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          const Text("Mark Review",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Color(0xff1AA19A),
-                                  fontWeight: FontWeight.normal)),
-                        ],
-                      )),
-                ],
-              ),
-            ],
-          ),
+          // const Text("Summary",
+          //     style: TextStyle(
+          //         fontSize: 20,
+          //         color: Color(0xff1AA19A),
+          //         fontWeight: FontWeight.normal)),
+          // Column(
+          //   children: [
+          //     Row(
+          //       children: [
+          //         Expanded(
+          //           flex: 1,
+          //           child: Row(
+          //             children: [
+          //               const SizedBox(
+          //                 width: 10,
+          //               ),
+          //               SizedBox(
+          //                 height: 60,
+          //                 child: CircleAvatar(
+          //                   backgroundColor: Colors.green,
+          //                   child: Center(
+          //                     child: Text(
+          //                       count1.toString(),
+          //                       style: const TextStyle(
+          //                           fontSize: 18,
+          //                           color: Colors.white,
+          //                           fontWeight: FontWeight.normal),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ),
+          //               const SizedBox(
+          //                 width: 10,
+          //               ),
+          //               const Text("Answered",
+          //                   textAlign: TextAlign.center,
+          //                   style: TextStyle(
+          //                       fontSize: 18,
+          //                       color: Color(0xff1AA19A),
+          //                       fontWeight: FontWeight.normal)),
+          //             ],
+          //           ),
+          //         ),
+          //         Expanded(
+          //             flex: 1,
+          //             child: Row(
+          //               children: [
+          //                 SizedBox(
+          //                   height: 60,
+          //                   child: CircleAvatar(
+          //                     backgroundColor: Colors.yellow,
+          //                     child: Center(
+          //                       child: Text(
+          //                         count2.toString(),
+          //                         style: const TextStyle(
+          //                             fontSize: 18,
+          //                             color: Colors.black,
+          //                             fontWeight: FontWeight.normal),
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ),
+          //                 const SizedBox(
+          //                   width: 10,
+          //                 ),
+          //                 const Text("Skipped",
+          //                     textAlign: TextAlign.center,
+          //                     style: TextStyle(
+          //                         fontSize: 18,
+          //                         color: Color(0xff1AA19A),
+          //                         fontWeight: FontWeight.normal)),
+          //               ],
+          //             )),
+          //       ],
+          //     ),
+          //     const SizedBox(
+          //       height: 10,
+          //     ),
+          //     Row(
+          //       children: [
+          //         Expanded(
+          //           flex: 1,
+          //           child: Row(
+          //             children: [
+          //               const SizedBox(
+          //                 width: 10,
+          //               ),
+          //               SizedBox(
+          //                 height: 60,
+          //                 child: CircleAvatar(
+          //                   backgroundColor: const Color(0Xffacacac),
+          //                   child: Center(
+          //                     child: Text(
+          //                       count3.toString(),
+          //                       style: const TextStyle(
+          //                           fontSize: 18,
+          //                           color: Colors.white,
+          //                           fontWeight: FontWeight.normal),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ),
+          //               const SizedBox(
+          //                 width: 10,
+          //               ),
+          //               const Text("Not Visited",
+          //                   textAlign: TextAlign.center,
+          //                   style: TextStyle(
+          //                       fontSize: 18,
+          //                       color: Color(0xff1AA19A),
+          //                       fontWeight: FontWeight.normal)),
+          //             ],
+          //           ),
+          //         ),
+          //         Expanded(
+          //             flex: 1,
+          //             child: Row(
+          //               children: [
+          //                 SizedBox(
+          //                   height: 60,
+          //                   child: CircleAvatar(
+          //                     backgroundColor: const Color(0Xff283593),
+          //                     child: Center(
+          //                       child: Text(
+          //                         count4.toString(),
+          //                         style: const TextStyle(
+          //                             fontSize: 18,
+          //                             color: Colors.black,
+          //                             fontWeight: FontWeight.normal),
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ),
+          //                 const SizedBox(
+          //                   width: 10,
+          //                 ),
+          //                 const Text("Mark Review",
+          //                     textAlign: TextAlign.center,
+          //                     style: TextStyle(
+          //                         fontSize: 18,
+          //                         color: Color(0xff1AA19A),
+          //                         fontWeight: FontWeight.normal)),
+          //               ],
+          //             )),
+          //       ],
+          //     ),
+          //   ],
+          // ),
           const SizedBox(
             height: 10,
           ),
@@ -1239,6 +1279,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
     );
   }
 }
+
+// /GetSubjectWiseQnList.aspx
+
+
+
 //   Widget _showData() {
 //     return Container(
 //       padding: const EdgeInsets.all(10.0),

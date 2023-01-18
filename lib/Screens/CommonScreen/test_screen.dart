@@ -62,7 +62,7 @@ class _TestScreenState extends State<TestScreen> {
     timer = 5;
     setState(() {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const ResultScreen(),
+        builder: (context) =>  ResultScreen(),
       ));
       // if (j < 10) {
       //   i = random_array[j];
@@ -318,7 +318,7 @@ class _TestScreenState extends State<TestScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const ResultScreen()));
+                                  builder: (context) =>  ResultScreen()));
                         },
                       ),
                       const SizedBox(

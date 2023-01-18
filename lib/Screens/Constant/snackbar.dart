@@ -1,3 +1,4 @@
+import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
 import 'package:flutter/material.dart';
 
 snackBar(BuildContext context, String text) {
@@ -11,7 +12,7 @@ snackBar(BuildContext context, String text) {
     //width: 10,
     elevation: 6.0,
     duration: const Duration(seconds: 3),
-    backgroundColor: Color(0xff2A2866),
+    backgroundColor:textColor,
     action: SnackBarAction(
       label: 'Dismiss',
       textColor: Colors.white,
@@ -32,7 +33,7 @@ snackBar1(BuildContext context, String text) {
     //width: 10,
     elevation: 6.0,
     duration: const Duration(seconds: 10),
-    backgroundColor: Color(0xff2A2866),
+    backgroundColor: textColor,
     action: SnackBarAction(
       label: 'Dismiss',
       textColor: Colors.white,

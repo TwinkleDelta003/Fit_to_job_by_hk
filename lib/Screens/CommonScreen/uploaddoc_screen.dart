@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:fit_to_job/Screens/CommonScreen/demoscreen.dart';
+import 'package:fit_to_job/Screens/CommonScreen/viewuplodeddoc.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
 import 'package:fit_to_job/Screens/Constant/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +65,7 @@ class _UploadScreenState extends State<UploadScreen> {
     var url =
         "http://110.227.253.77:90/DeltaFitToJob/API/API_RegistrationVerifications.aspx";
     var request = http.MultipartRequest('POST', Uri.parse(url));
-    request.fields['RegistrationId'] = "8b80678a-3a72-4795-b7fc-e5742c7b5f6d";
+    request.fields['RegistrationId'] = registrationId;
 
     var pic = await http.MultipartFile.fromPath("PhotoPath", _image.path);
     var video =
@@ -249,13 +251,15 @@ class _UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+        
+        backgroundColor: Color(0xff018F89),
+        elevation: 5,
         centerTitle: true,
         leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_ios,
-              color: Color(0xff018F89),
+              color: Colors.white
+              // Color(0xff018F89),
             ),
             onPressed: () => Get.back()),
         title: const Padding(
@@ -263,11 +267,13 @@ class _UploadScreenState extends State<UploadScreen> {
           child: Text(
             "Online iExam",
             style: TextStyle(
-                color: Color(0xff1AA19A),
+                color: Colors.white,
+                // Color(0xff1AA19A),
                 fontSize: 24,
                 fontWeight: FontWeight.bold),
           ),
         ),
+        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -402,7 +408,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const VideoPlayerScreen()));
+                                          const VideoPlayerScreen()
+                                          ));
                             },
                           ),
                         ),
@@ -478,6 +485,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(5)),
                                         child: Card(
+                                          elevation: 4,
                                           color: const Color(0xff41BBFF),
                                           child: Column(
                                             crossAxisAlignment:
@@ -578,7 +586,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(5)),
                                         child: Card(
-                                          color: const Color(0xff41BBFF),
+                                          elevation: 4,
+                                          color: const Color(0xff8B9DFF),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
@@ -691,7 +700,8 @@ class _UploadScreenState extends State<UploadScreen> {
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5)),
                                     child: Card(
-                                      color: const Color(0xff41BBFF),
+                                      elevation: 4,
+                                      color: const Color(0xffF98ABD),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
@@ -720,21 +730,44 @@ class _UploadScreenState extends State<UploadScreen> {
                                 )),
                           ],
                         ),
-                        InkWell(
-                          onTap: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: const [
-                              Text("Attached File"),
-                              SizedBox(
-                                width: 5,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 220.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Color(0xffCFFFFD)),
+                            width: MediaQuery.of(context).size.width / 2.5,
+                            height: MediaQuery.of(context).size.height / 15,
+                            // color: Color(0xffCFFFFD),
+                            child: InkWell(
+                              onTap: () {
+                                Get.to(() => ViewUploadDocs(),
+                              arguments: [registrationId]);
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Text(
+                                    "Attached File",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.attachment,
+                                    color: textColor,
+                                  )
+                                ],
                               ),
-                              Icon(
-                                Icons.attachment,
-                                color: textColor,
-                              )
-                            ],
+                            ),
                           ),
+                        ),
+                        SizedBox(
+                          height: 30,
                         ),
                         Helper().customMaterialButton2(
                           bName: "Submit",
@@ -778,7 +811,7 @@ class VideoPlayerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'GeeksForGeeks',
+      title: 'Demo',
       home: VideoPlayerScreen(),
     );
   }
@@ -905,3 +938,5 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
     }
   }
 }
+
+// ok

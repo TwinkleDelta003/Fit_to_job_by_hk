@@ -989,12 +989,15 @@
 //   }
 // }
 
-import 'package:fit_to_job/API/Controller/question_controller.dart';
 import 'package:fit_to_job/API/Model/assessment_model.dart';
 import 'package:fit_to_job/API/Model/home_model.dart';
+import 'package:fit_to_job/Screens/CommonScreen/identityCard.dart';
 import 'package:fit_to_job/Screens/CommonScreen/interviewform_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/question_screen.dart';
 import 'package:fit_to_job/Screens/CommonScreen/result_screen.dart';
+import 'package:fit_to_job/Screens/CommonScreen/testlist.dart';
+import 'package:fit_to_job/Screens/CommonScreen/training_subject_screen.dart';
+import 'package:fit_to_job/Screens/CommonScreen/uploaddoc_screen.dart';
 import 'package:fit_to_job/Screens/Constant/Colorpath.dart';
 import 'package:fit_to_job/Screens/Constant/imagePath.dart';
 import 'package:flutter/cupertino.dart';
@@ -1002,7 +1005,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../API/Controller/home_controller.dart';
-import '../Constant/responsive.dart';
+import '../../API/Controller/jobprofile_controller.dart';
+// import 'package:url_launcher/url_launcher.dart';
 import '../Widgets/hepler.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -1022,24 +1026,49 @@ class _HomeScreenState extends State<HomeScreen> {
   String registrationId;
   String firstName;
   String designation;
+  String jobOfferingId;
   getUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       registrationId = prefs.getString('registrationId');
       firstName = prefs.getString('firstName');
       designation = prefs.getString('designation');
+      jobOfferingId = prefs.getString('jobOfferingId');
     });
   }
+
+  // void launchPlayStore() async {
+  //   if (!await launch(
+  //       "https://play.google.com/store/apps/details?id=com.delta.promptparivar")) {}
+  // }
 
   String testId = "";
   String examScheduleId = "";
   String subId = "";
   String subName = "";
   String totalExamTime = "";
+  String totalqn = "";
 
   @override
   void initState() {
     getUserId();
+    VersionAPI().then((value) => {
+          if (value.status == "200")
+            {
+              print(
+                value.result[0].version,
+              ),
+              if (value.result[0].version == "1.0.5")
+                {print("Update Done")}
+              else
+                {
+                  print("Update pending"),
+                  setState(() {
+                    _modalBottomSheetMenu();
+                  })
+                }
+            }
+        });
     super.initState();
   }
 
@@ -1086,14 +1115,21 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: Padding(
             padding: const EdgeInsets.all(10.0),
             child: customAssetPath(imagePath: logoImage)),
-        title: const Padding(
+        title: Padding(
           padding: EdgeInsets.only(right: 120.0),
-          child: Text(
-            "Online iExam",
-            style: TextStyle(
-                color: Color(0xff1AA19A),
-                fontSize: 24,
-                fontWeight: FontWeight.bold),
+          child: InkWell(
+            onTap: (() {
+              Get.to(
+                () => IDCard(),
+              );
+            }),
+            child: const Text(
+              "Online iExam",
+              style: TextStyle(
+                  color: Color(0xff1AA19A),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),
@@ -1163,6 +1199,148 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+              // Row(
+              //   children: [
+              //     Padding(
+              //       padding: const EdgeInsets.all(10.0),
+              //       child: SizedBox(
+              //         height: MediaQuery.of(context).size.height / 10,
+              //         width: MediaQuery.of(context).size.width / 2.3,
+              //         child: InkWell(
+              //           onTap: (() {
+              //             Get.to(() => const InterviewScreen(),
+              //                 arguments: [registrationId]);
+              //           }),
+              //           child: Card(
+              //             shape: RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(10.0),
+              //             ),
+              //             elevation: 10,
+              //             child: Column(
+              //               children: [
+              //                 Padding(
+              //                   padding:
+              //                       const EdgeInsets.only(left: 10.0, top: 10),
+              //                   child: Row(
+              //                     children: [
+              //                       SizedBox(
+              //                         width: 10,
+              //                       ),
+              //                       Center(
+              //                         child: Text(
+              //                           "Interview\n" "Form",
+              //                           style: TextStyle(
+              //                               color: textColor,
+              //                               fontSize: 18,
+              //                               fontWeight: FontWeight.w700),
+              //                         ),
+              //                       ),
+              //                       SizedBox(width: 10),
+              //                       customAssetPath(
+              //                           imagePath: interview, size: 50)
+              //                     ],
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.all(10.0),
+              //       child: SizedBox(
+              //         height: MediaQuery.of(context).size.height / 10,
+              //         width: MediaQuery.of(context).size.width / 2.3,
+              //         child: InkWell(
+              //           onTap: (() {
+              //             Get.to(() => const UploadScreen(),
+              //                 arguments: [registrationId]);
+              //           }),
+              //           child: Card(
+              //             shape: RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(10.0),
+              //             ),
+              //             elevation: 10,
+              //             child: Column(
+              //               children: [
+              //                 Padding(
+              //                   padding: EdgeInsets.only(left: 20.0, top: 10),
+              //                   child: Row(
+              //                     children: [
+              //                       SizedBox(
+              //                         width: 10,
+              //                       ),
+              //                       Center(
+              //                         child: Text(
+              //                           "File\n" "Upload",
+              //                           style: TextStyle(
+              //                               color: textColor,
+              //                               fontSize: 18,
+              //                               fontWeight: FontWeight.w700),
+              //                         ),
+              //                       ),
+              //                       SizedBox(width: 10),
+              //                       customAssetPath(imagePath: attach, size: 50)
+              //                     ],
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.only(right: 210),
+              //   child: SizedBox(
+              //     height: MediaQuery.of(context).size.height / 10,
+              //     width: MediaQuery.of(context).size.width / 2.3,
+              //     child: InkWell(
+              //       onTap: (() {
+              //         Get.to(() => const testlist(),
+              //             arguments: [registrationId]);
+              //       }),
+              //       child: Card(
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(10.0),
+              //         ),
+              //         elevation: 10,
+              //         child: Column(
+              //           children: [
+              //             Padding(
+              //               padding: const EdgeInsets.only(left: 10.0, top: 10),
+              //               child: Row(
+              //                 children: [
+              //                   Row(
+              //                     children: [
+              //                       SizedBox(
+              //                         width: 10,
+              //                       ),
+              //                       Center(
+              //                         child: Text(
+              //                           "Test",
+              //                           style: TextStyle(
+              //                               color: textColor,
+              //                               fontSize: 18,
+              //                               fontWeight: FontWeight.w700),
+              //                         ),
+              //                       ),
+              //                       SizedBox(width: 50),
+              //                       customAssetPath(imagePath: exam, size: 45)
+              //                     ],
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
               Container(
                 height: 150,
                 decoration: const BoxDecoration(
@@ -1180,47 +1358,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 color: const Color(0xff018F89),
-                height: SizeConfig.screenHeight,
+                height: MediaQuery.of(context).size.height / 1.9,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 18.0),
-                          child: Text(
-                            "Level Wise Test Series",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18),
-                          ),
-                        ),
-                        SizedBox(
-                            width: MediaQuery.of(context).size.width / 2.5),
-                        InkWell(
-                          onTap: () {
-                            Get.to(() => const InterviewScreen());
-                          },
-                          //  () async {
-                          //   await Future.delayed(const Duration(seconds: 2));
-                          //   setState(() {
-                          //     testViewListAPI(
-                          //         RegistrationId: registrationId.toString(),
-                          //         date: DateTime.now().toString());
-                          //   });
-                          // },
-                          // () {
-                          //   testViewListAPI(
-                          //       RegistrationId: registrationId.toString(),
-                          //       date: DateTime.now().toString());
-                          // },
-                          child: const Icon(Icons.refresh, color: Colors.white),
-                        )
-                      ],
-                    ),
-                    _homeViewUI()
-                  ],
+                  children: [_homeViewUI()],
                 ),
               ),
             ],
@@ -1231,33 +1372,231 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _homeViewUI() {
-    return SizedBox(
-        height: MediaQuery.of(context).size.height / 2,
-        width: MediaQuery.of(context).size.width,
-        child: FutureBuilder(
-            future: testViewListAPI(
-                date: DateTime.now().toString(),
-                RegistrationId: registrationId.toString()),
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return Center(
-                    child: snapshot.connectionState != ConnectionState.done
-                        ? const CircularProgressIndicator()
-                        : Helper()
-                            .customText(text: "No Data Found", fontSize: 20));
-              } else {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  width: MediaQuery.of(context).size.width,
-                  child: ListView.builder(
-                      itemCount: snapshot.data.result.length,
-                      itemBuilder: (context, index) {
-                        var list = snapshot.data.result[index];
-                        return _homeUISetup(model: HomeModel(result: [list]));
-                      }),
-                );
-              }
-            }));
+    return Column(
+      children: [
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height / 8,
+                width: MediaQuery.of(context).size.width / 2.3,
+                child: InkWell(
+                  onTap: (() {
+                    Get.to(() => const InterviewScreen(),
+                        arguments: [registrationId]);
+                  }),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 10,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 20),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Center(
+                                child: Text(
+                                  "Interview\n" "Form",
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              customAssetPath(imagePath: interview, size: 50)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height / 8,
+                width: MediaQuery.of(context).size.width / 2.3,
+                child: InkWell(
+                  onTap: (() {
+                    Get.to(() => const UploadScreen(),
+                        arguments: [registrationId]);
+                  }),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 10,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 20.0, top: 18),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Center(
+                                child: Text(
+                                  "File\n" "Upload",
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              customAssetPath(imagePath: attach, size: 50)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height / 8,
+                width: MediaQuery.of(context).size.width / 2.3,
+                child: InkWell(
+                  onTap: (() {
+                    Get.to(() => testlist(), arguments: [registrationId]);
+                  }),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 10,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 20),
+                          child: Row(
+                            children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Center(
+                                    child: Text(
+                                      "Test",
+                                      style: TextStyle(
+                                          color: textColor,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                  SizedBox(width: 50),
+                                  customAssetPath(imagePath: exam, size: 50)
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height / 8,
+                width: MediaQuery.of(context).size.width / 2.3,
+                child: InkWell(
+                  onTap: (() {
+                    Get.to(() => TrainingSubjectScreen(),
+                    arguments: [registrationId]);
+                  }),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 10,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10.0, top: 20),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Center(
+                                child: Text(
+                                  "Trainning \nMaterial",
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              customAssetPath(imagePath: material, size: 45)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 20,
+        )
+      ],
+    );
+
+    // SizedBox(
+    //     height: MediaQuery.of(context).size.height / 2,
+    //     width: MediaQuery.of(context).size.width,
+    //     child: FutureBuilder(
+    //         future: testViewListAPI(
+    //             date: "22-Dec-2022",
+    //             // DateTime.now().toString(),
+    //             RegistrationId: registrationId.toString()),
+    //         builder: (context, snapshot) {
+    //           if (snapshot.data == null) {
+    //             return Center(
+    //                 child: snapshot.connectionState != ConnectionState.done
+    //                     ? const CircularProgressIndicator()
+    //                     : Helper().customText(
+    //                         text: "No Data Found",
+    //                         fontSize: 20,
+    //                         color: Colors.white));
+    //           } else {
+    //             return SizedBox(
+    //               height: MediaQuery.of(context).size.height / 2,
+    //               width: MediaQuery.of(context).size.width,
+    //               child: ListView.builder(
+    //                   itemCount: snapshot.data.result.length,
+    //                   itemBuilder: (context, index) {
+    //                     var list = snapshot.data.result[index];
+    //                     return _homeUISetup(model: HomeModel(result: [list]));
+    //                   }),
+    //             );
+    //           }
+    //         }));
   }
 
   _modalBottomSheetAssessment(HomeModel model) {
@@ -1265,6 +1604,7 @@ class _HomeScreenState extends State<HomeScreen> {
     examScheduleId = model.result[0].examscheduleId;
     subId = model.result[0].subId;
     subName = model.result[0].subName;
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await showModalBottomSheet(
           isDismissible: false,
@@ -1675,7 +2015,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 subId,
                 subName,
                 totalExamTime,
-                registrationId
+                registrationId,
+                totalqn
               ]);
             },
           ),
@@ -1690,6 +2031,7 @@ class _HomeScreenState extends State<HomeScreen> {
 // for Assessment pop up
   _assessmentUI({AssessmentModel model}) {
     totalExamTime = model.result[0].duration;
+    totalqn = model.result[0].totalQn;
 
     return SingleChildScrollView(
       child: Column(
@@ -1798,7 +2140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   fSize: 26,
                   fweight: FontWeight.bold,
                   press: () {
-                    Get.to(() => const ResultScreen(), arguments: [
+                    Get.to(() => ResultScreen(), arguments: [
                       testId,
                       examScheduleId,
                       subId,
@@ -1807,27 +2149,33 @@ class _HomeScreenState extends State<HomeScreen> {
                     ]);
                   },
                 )
+              : Text(
+                  "Complete Your Exam First",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: textColor,
+                      fontWeight: FontWeight.w700),
+                ),
+          // InkWell(
+          //     onTap: () {Get.toNamed('/resultscreen');
+          //
 
-              // InkWell(
-              //     onTap: () {
-              //       Get.toNamed('/resultscreen');
+          //       Get.to(() => const ResultScreen(), arguments: [
+          //         testId,
+          //         examScheduleId,
+          //         subId,
+          //         subName,
+          //         totalExamTime
+          //       ]);
+          //     },
+          // child: const Text(
+          //   "Check Result",
+          //   style: TextStyle(
+          //       color: textColor,
+          //       fontWeight: FontWeight.w500,
+          //       fontSize: 18),
+          // ))
 
-              //       Get.to(() => const ResultScreen(), arguments: [
-              //         testId,
-              //         examScheduleId,
-              //         subId,
-              //         subName,
-              //         totalExamTime
-              //       ]);
-              //     },
-              // child: const Text(
-              //   "Check Result",
-              //   style: TextStyle(
-              //       color: textColor,
-              //       fontWeight: FontWeight.w500,
-              //       fontSize: 18),
-              // ))
-              : Container(),
           const Text("Your assessment already started !!",
               textAlign: TextAlign.left,
               style: TextStyle(
@@ -2033,5 +2381,60 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  _modalBottomSheetMenu() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await showModalBottomSheet(
+          isDismissible: false,
+          enableDrag: false,
+          isScrollControlled: false,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+          context: context,
+          builder: (builder) {
+            return Container(
+              height: 350.0,
+              color: Colors.transparent,
+              child: Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10.0),
+                          topRight: Radius.circular(10.0))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      ListTile(
+                        title: Helper().customText(
+                          text: "Your App Version is Outdated".tr,
+                          fWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                        subtitle: Helper().customText(
+                          text: "Please Update Your App".tr,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      Helper().customMaterialButton(
+                        press: () {
+                          // launchPlayStore();
+
+                          //  done.
+                        },
+                        context: context,
+                        bName: "Update Now".tr,
+                        fSize: 24,
+                      ),
+                    ],
+                  )),
+            );
+          });
+    });
   }
 }
